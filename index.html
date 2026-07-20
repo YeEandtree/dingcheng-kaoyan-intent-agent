@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>顶程考研｜意向统计台</title>
+  <style>
+    :root {
+      --ink: #17252a;
+      --muted: #607477;
+      --line: #d9e3df;
+      --paper: #f7faf8;
+      --white: #ffffff;
+      --teal: #177e74;
+      --teal-soft: #e0f1eb;
+      --gold: #e6a23c;
+      --coral: #e76f51;
+      --shadow: 0 12px 32px rgba(23, 37, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { max-width: 1440px; margin: 0 auto; padding: 28px 34px 48px; }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; padding-bottom: 26px; border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      width: 42px; height: 42px; display: grid; place-items: center;
+      background: var(--teal); color: white; font-weight: 800; border-radius: 8px;
+    }
+    h1 { font-size: 21px; margin: 0; letter-spacing: 0; }
+    .subtitle { color: var(--muted); font-size: 13px; margin: 4px 0 0; }
+    .status { display: flex; align-items: center; gap: 8px; color: var(--teal); font-size: 13px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #33a780; }
+    .toolbar { display: flex; gap: 10px; margin: 26px 0 18px; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--line); background: var(--white); color: var(--ink);
+      padding: 9px 13px; border-radius: 6px; font-size: 14px;
+    }
+    .btn:hover { border-color: var(--teal); color: var(--teal); }
+    .btn.primary { background: var(--teal); color: white; border-color: var(--teal); }
+    .btn.primary:hover { background: #10675f; color: white; }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .metric {
+      background: var(--white); border: 1px solid var(--line); border-radius: 8px;
+      padding: 17px 18px; min-height: 105px;
+    }
+    .metric-label { color: var(--muted); font-size: 13px; }
+    .metric-value { font-size: 30px; line-height: 1; font-weight: 750; margin: 14px 0 7px; }
+    .metric-note { font-size: 12px; color: var(--muted); }
+    .metric-note.positive { color: var(--teal); }
+    .workspace { display: grid; grid-template-columns: 1.55fr 0.85fr; gap: 18px; margin-top: 18px; }
+    .panel {
+      border: 1px solid var(--line); background: var(--white); border-radius: 8px; overflow: hidden;
+    }
+    .panel-head {
+      padding: 16px 18px; border-bottom: 1px solid var(--line);
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
+    h2 { font-size: 16px; margin: 0; }
+    .count { color: var(--muted); font-size: 13px; }
+    .filters { display: flex; gap: 8px; padding: 13px 18px; border-bottom: 1px solid var(--line); }
+    .filters input, .filters select, .form-grid input, .form-grid select, textarea {
+      border: 1px solid var(--line); border-radius: 5px; outline: none; background: white; color: var(--ink);
+    }
+    .filters input { flex: 1; padding: 8px 10px; min-width: 100px; }
+    .filters select { width: 130px; padding: 8px; }
+    .filters input:focus, .filters select:focus, .form-grid input:focus, .form-grid select:focus, textarea:focus {
+      border-color: var(--teal); box-shadow: 0 0 0 3px rgba(23, 126, 116, .12);
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 650px; }
+    th { background: #fbfcfb; color: var(--muted); font-weight: 500; font-size: 12px; text-align: left; }
+    th, td { padding: 13px 18px; border-bottom: 1px solid #edf1ef; }
+    td { font-size: 14px; }
+    tr:last-child td { border-bottom: 0; }
+    .tag { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 100px; font-size: 12px; }
+    .tag.high { background: #fff0e8; color: #b74d2e; }
+    .tag.medium { background: #fff6dd; color: #9a6500; }
+    .tag.low { background: #e9f4f2; color: #237169; }
+    .tag.none { background: #eef1f1; color: #697879; }
+    .intent { font-weight: 600; }
+    .side { display: grid; gap: 18px; align-content: start; }
+    .form-body { padding: 17px 18px 18px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+    .form-grid input, .form-grid select { width: 100%; padding: 9px; }
+    .form-row { margin-top: 12px; }
+    textarea { resize: vertical; width: 100%; min-height: 88px; padding: 9px; line-height: 1.5; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+    .chart-body { padding: 16px 18px 18px; }
+    .bar-row { display: grid; grid-template-columns: 82px 1fr 32px; align-items: center; gap: 8px; margin: 13px 0; font-size: 13px; }
+    .bar-track { height: 9px; background: #edf2f0; border-radius: 99px; overflow: hidden; }
+    .bar { height: 100%; border-radius: 99px; background: var(--teal); }
+    .bar-row:nth-child(3) .bar { background: var(--gold); }
+    .bar-row:nth-child(4) .bar { background: var(--coral); }
+    .hint { padding: 12px 18px 17px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .empty { color: var(--muted); text-align: center; padding: 30px; }
+    dialog { border: 0; border-radius: 8px; box-shadow: var(--shadow); width: min(620px, calc(100% - 32px)); padding: 0; }
+    dialog::backdrop { background: rgba(23, 37, 42, .32); }
+    .modal-body { padding: 18px; }
+    .modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 0 18px 18px; }
+    @media (max-width: 920px) {
+      .app { padding: 20px 16px 32px; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .workspace { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      header { align-items: flex-start; }
+      .status { display: none; }
+      .metrics { grid-template-columns: 1fr 1fr; gap: 9px; }
+      .metric { padding: 14px; min-height: 96px; }
+      .metric-value { font-size: 26px; }
+      .filters { flex-direction: column; }
+      .filters select { width: 100%; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand">
+        <div class="logo">顶程</div>
+        <div>
+          <h1>考研意向统计台</h1>
+          <p class="subtitle">大学城校区 · 意向识别与招生线索汇总</p>
+        </div>
+      </div>
+      <div class="status"><span class="dot"></span>AI 识别服务运行中</div>
+    </header>
+
+    <section class="toolbar">
+      <button class="btn primary" id="sampleBtn">载入示例数据</button>
+      <button class="btn" id="importBtn">批量识别文本</button>
+      <button class="btn" id="exportBtn">导出统计 CSV</button>
+      <button class="btn" id="clearBtn">清空数据</button>
+    </section>
+
+    <section class="metrics">
+      <article class="metric"><div class="metric-label">收集总人数</div><div class="metric-value" id="totalMetric">0</div><div class="metric-note">已录入有效线索</div></article>
+      <article class="metric"><div class="metric-label">明确考研意向</div><div class="metric-value" id="intentMetric">0</div><div class="metric-note positive" id="intentRate">占比 0%</div></article>
+      <article class="metric"><div class="metric-label">高优先级跟进</div><div class="metric-value" id="highMetric">0</div><div class="metric-note">建议 24 小时内联系</div></article>
+      <article class="metric"><div class="metric-label">覆盖校区</div><div class="metric-value" id="campusMetric">0</div><div class="metric-note">有线索的校区数量</div></article>
+    </section>
+
+    <section class="workspace">
+      <section class="panel">
+        <div class="panel-head"><h2>学生意向明细</h2><span class="count" id="recordCount">0 条记录</span></div>
+        <div class="filters">
+          <input id="searchInput" placeholder="搜索姓名、专业或原始反馈" />
+          <select id="campusFilter"><option value="">全部校区</option></select>
+          <select id="intentFilter"><option value="">全部意向</option><option value="明确意向">明确意向</option><option value="观望中">观望中</option><option value="暂无意向">暂无意向</option></select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>学生</th><th>校区</th><th>专业</th><th>AI 意向判断</th><th>优先级</th><th>更新时间</th></tr></thead>
+            <tbody id="recordsBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="panel">
+          <div class="panel-head"><h2>新增线索</h2><span class="count">自动识别</span></div>
+          <form class="form-body" id="leadForm">
+            <div class="form-grid">
+              <div><label for="name">学生姓名</label><input id="name" required placeholder="如：张同学" /></div>
+              <div><label for="campus">所属校区</label><select id="campus" required><option value="东校区">东校区</option><option value="西校区">西校区</option><option value="南校区">南校区</option><option value="北校区">北校区</option></select></div>
+              <div><label for="major">专业</label><input id="major" required placeholder="如：计算机科学" /></div>
+              <div><label for="contact">联系方式</label><input id="contact" placeholder="手机号或微信号" /></div>
+            </div>
+            <div class="form-row"><label for="feedback">学生原始反馈</label><textarea id="feedback" required placeholder="例如：我准备考计算机专硕，想了解课程和报名时间。"></textarea></div>
+            <div class="form-actions"><button class="btn primary" type="submit">识别并录入</button></div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>校区意向分布</h2><span class="count">明确意向人数</span></div>
+          <div class="chart-body" id="campusChart"></div>
+          <div class="hint">优先安排明确意向且高优先级学生的咨询跟进。</div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <dialog id="importDialog">
+    <div class="panel-head"><h2>批量识别文本</h2><button class="btn" id="closeImport">关闭</button></div>
+    <div class="modal-body">
+      <label for="bulkText">每行一条：姓名｜校区｜专业｜原始反馈</label>
+      <textarea id="bulkText" style="min-height:180px" placeholder="李同学｜东校区｜金融学｜正在准备考研，想了解金融专硕课程&#10;王同学｜西校区｜英语｜暂时先找工作，考研以后再说"></textarea>
+    </div>
+    <div class="modal-foot"><button class="btn primary" id="parseBulk">识别并导入</button></div>
+  </dialog>
+
+  <script>
+    const storageKey = "dingcheng-intent-agent-leads";
+    const $ = (id) => document.getElementById(id);
+    const samples = [
+      { name: "李思雨", campus: "东校区", major: "金融学", contact: "138****1221", feedback: "正在准备考研，想了解金融专硕课程和报名时间。" },
+      { name: "王泽宇", campus: "西校区", major: "英语", contact: "wx_wzy", feedback: "最近在考虑考研和找工作，先看看英语方向的课程。" },
+      { name: "陈静", campus: "南校区", major: "临床医学", contact: "139****8862", feedback: "目标是考临床医学专硕，已经在准备英语和政治，想预约咨询。" },
+      { name: "周扬", campus: "东校区", major: "计算机科学", contact: "zy_2026", feedback: "我准备考计算机专硕，麻烦发一下课程资料和价格。" },
+      { name: "赵然", campus: "北校区", major: "法学", contact: "137****4308", feedback: "目前还没决定是否考研，想先了解一下法硕的难度。" },
+      { name: "何琳", campus: "西校区", major: "教育学", contact: "hl_edu", feedback: "不打算考研了，毕业后准备参加教师招聘。" }
+    ];
+
+    let leads = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+    function analyzeIntent(text) {
+      const normalized = text.toLowerCase();
+      const noWords = ["不考", "不打算", "找工作", "就业", "以后再说", "暂时不"];
+      const highWords = ["报名", "价格", "费用", "预约", "咨询", "课程资料", "准备考", "目标是", "专硕", "复试"];
+      const maybeWords = ["考虑", "看看", "了解", "没决定", "难度", "观望"];
+      if (noWords.some(word => normalized.includes(word))) return { intent: "暂无意向", priority: "低" };
+      if (highWords.some(word => normalized.includes(word))) return { intent: "明确意向", priority: "高" };
+      if (maybeWords.some(word => normalized.includes(word))) return { intent: "观望中", priority: "中" };
+      return { intent: "观望中", priority: "中" };
+    }
+
+    function createLead(input) {
+      const analysis = analyzeIntent(input.feedback);
+      return { ...input, ...analysis, id: crypto.randomUUID(), createdAt: new Date().toLocaleString("zh-CN", { hour12: false }) };
+    }
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify(leads));
+    }
+
+    function priorityClass(priority) {
+      return priority === "高" ? "high" : priority === "中" ? "medium" : "low";
+    }
+
+    function render() {
+      const query = $("searchInput").value.trim().toLowerCase();
+      const selectedCampus = $("campusFilter").value;
+      const selectedIntent = $("intentFilter").value;
+      const filtered = leads.filter(lead => {
+        const matchesQuery = !query || [lead.name, lead.major, lead.feedback].join(" ").toLowerCase().includes(query);
+        return matchesQuery && (!selectedCampus || lead.campus === selectedCampus) && (!selectedIntent || lead.intent === selectedIntent);
+      });
+      $("recordsBody").innerHTML = filtered.length ? filtered.map(lead => `
+        <tr>
+          <td><strong>${escapeHtml(lead.name)}</strong><br><small>${escapeHtml(lead.contact || "未留联系方式")}</small></td>
+          <td>${escapeHtml(lead.campus)}</td><td>${escapeHtml(lead.major)}</td>
+          <td><span class="intent">${lead.intent}</span></td>
+          <td><span class="tag ${priorityClass(lead.priority)}">${lead.priority}优先级</span></td>
+          <td>${lead.createdAt}</td>
+        </tr>`).join("") : `<tr><td colspan="6" class="empty">暂无符合条件的线索</td></tr>`;
+      $("recordCount").textContent = `${filtered.length} 条记录`;
+
+      const total = leads.length;
+      const interested = leads.filter(l => l.intent === "明确意向").length;
+      const high = leads.filter(l => l.priority === "高").length;
+      const campuses = [...new Set(leads.map(l => l.campus))].length;
+      $("totalMetric").textContent = total;
+      $("intentMetric").textContent = interested;
+      $("highMetric").textContent = high;
+      $("campusMetric").textContent = campuses;
+      $("intentRate").textContent = `占比 ${total ? Math.round(interested / total * 100) : 0}%`;
+
+      const allCampuses = ["东校区", "西校区", "南校区", "北校区"];
+      const campusCounts = allCampuses.map(campus => ({ campus, count: leads.filter(l => l.campus === campus && l.intent === "明确意向").length }));
+      const max = Math.max(1, ...campusCounts.map(i => i.count));
+      $("campusChart").innerHTML = campusCounts.map(item => `<div class="bar-row"><span>${item.campus}</span><div class="bar-track"><div class="bar" style="width:${item.count / max * 100}%"></div></div><strong>${item.count}</strong></div>`).join("");
+
+      const options = [...new Set(leads.map(l => l.campus))].sort();
+      const previous = $("campusFilter").value;
+      $("campusFilter").innerHTML = `<option value="">全部校区</option>` + options.map(c => `<option value="${c}">${c}</option>`).join("");
+      $("campusFilter").value = options.includes(previous) ? previous : "";
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" })[char]);
+    }
+
+    $("leadForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      leads.unshift(createLead({
+        name: $("name").value.trim(), campus: $("campus").value, major: $("major").value.trim(),
+        contact: $("contact").value.trim(), feedback: $("feedback").value.trim()
+      }));
+      save(); event.target.reset(); render();
+    });
+    $("searchInput").addEventListener("input", render);
+    $("campusFilter").addEventListener("change", render);
+    $("intentFilter").addEventListener("change", render);
+    $("sampleBtn").addEventListener("click", () => {
+      if (!leads.length || confirm("这会在当前数据后加入 6 条示例线索，是否继续？")) {
+        leads = [...samples.map(createLead), ...leads]; save(); render();
+      }
+    });
+    $("clearBtn").addEventListener("click", () => {
+      if (leads.length && confirm("确定清空全部线索吗？此操作无法撤销。")) { leads = []; save(); render(); }
+    });
+    $("importBtn").addEventListener("click", () => $("importDialog").showModal());
+    $("closeImport").addEventListener("click", () => $("importDialog").close());
+    $("parseBulk").addEventListener("click", () => {
+      const rows = $("bulkText").value.trim().split(/\n+/).filter(Boolean);
+      const parsed = rows.map(row => row.split(/[｜|]/).map(item => item.trim())).filter(parts => parts.length >= 4);
+      if (!parsed.length) return alert("没有识别到有效行，请按“姓名｜校区｜专业｜原始反馈”的格式填写。");
+      leads = [...parsed.map(([name, campus, major, feedback]) => createLead({ name, campus, major, feedback, contact: "" })), ...leads];
+      save(); $("bulkText").value = ""; $("importDialog").close(); render();
+    });
+    $("exportBtn").addEventListener("click", () => {
+      const header = ["姓名", "校区", "专业", "联系方式", "AI意向", "优先级", "原始反馈", "录入时间"];
+      const rows = leads.map(l => [l.name, l.campus, l.major, l.contact, l.intent, l.priority, l.feedback, l.createdAt]);
+      const csv = [header, ...rows].map(row => row.map(v => `"${String(v || "").replaceAll('"', '""')}"`).join(",")).join("\ufeff\n");
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+      link.download = `顶程考研意向统计_${new Date().toISOString().slice(0, 10)}.csv`; link.click(); URL.revokeObjectURL(link.href);
+    });
+    render();
+  </script>
+</body>
+</html>

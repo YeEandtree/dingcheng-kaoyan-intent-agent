@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>顶程考研｜意向统计台</title>
+  <title>考研学生统计器</title>
   <style>
     :root {
       --ink: #17252a;
@@ -129,9 +129,9 @@
   <main class="app">
     <header>
       <div class="brand">
-        <div class="logo">顶程</div>
+        <div class="logo">考研</div>
         <div>
-          <h1>考研意向统计台</h1>
+          <h1>考研学生统计器</h1>
           <p class="subtitle">大学城校区 · 意向识别与招生线索汇总</p>
         </div>
       </div>
@@ -316,7 +316,7 @@
       const csv = [header, ...rows].map(row => row.map(v => `"${String(v || "").replaceAll('"', '""')}"`).join(",")).join("\ufeff\n");
       const link = document.createElement("a");
       link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
-      link.download = `顶程考研意向统计_${new Date().toISOString().slice(0, 10)}.csv`; link.click(); URL.revokeObjectURL(link.href);
+      link.download = `考研学生统计_${new Date().toISOString().slice(0, 10)}.csv`; link.click(); URL.revokeObjectURL(link.href);
     });
     render();
   </script>
